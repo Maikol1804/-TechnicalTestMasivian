@@ -24,27 +24,38 @@ For the numerical type only the numbers from `0` to `36` are allowed and for the
 ## Main Endpoints
 
 * Create a roulette:
+
 	`POST` {domain}/api/Roulette
+	
 	Response Example:
+	```
 	{
 		{
 			"id": 1
 		}
 	}
+	```
 
 * Open a roulette:
+
 	`PUT` {domain}/api/Roulette/{rouletteId}/open
+	
 	Response Example:
+	```
 	{
 		{
 			"code": "Ok",
 			"message": "Roulette was opened"
 		}
 	}
+	```
 
 * Create a bet:
+
 	`POST` {domain}/api/Bet/
+	
 	Body Example 1:
+	```
 	{
 		{
 			"player": {
@@ -60,10 +71,15 @@ For the numerical type only the numbers from `0` to `36` are allowed and for the
 			"amount": 1000
 		}
 	}
+	```
+	
 	Response Example 1:
+	```
 	{}
+	```
 
 	Body Example 2:
+	```
 	{
 		{
 			"player": {
@@ -79,18 +95,30 @@ For the numerical type only the numbers from `0` to `36` are allowed and for the
 			"amount": 500
 		}
 	}
+	```
+	
 	Response Example 1:
+	```
 	{}
+	```
 
 * Close a roulette with your bets:
+
 	`PUT` {domain}/api/Roulette/{rouletteId}/close
+	
 	Response Example:
+	```
 	{}
+	```
 
 * Get all roulettes:
+
 	`GET` {domain}/api/Roulette
+	
 	Response Example:
+	```
 	{}
+	```
 
 Additionally [here](RouletteWebApi) you can find a Postman collection to consume the services.
 
