@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using RouletteWebApi.DataAccess;
 using RouletteWebApi.DTO;
 using RouletteWebApi.DTO.Mappers;
 using RouletteWebApi.Models;
 using RouletteWebApi.Services.Implementations;
 using RouletteWebApi.Services.Interfaces;
+using RouletteWebApi.Transverse;
 
 namespace RouletteWebApi.Controllers
 {
@@ -42,7 +40,7 @@ namespace RouletteWebApi.Controllers
 
         // GET: api/Roulette/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<RouletteCreatedDTO>> GetRoulette(long id)
+        public async Task<ActionResult<Roulette>> GetRoulette(long id)
         {
             var roulette = await repository.GetById(id);
 
@@ -51,7 +49,7 @@ namespace RouletteWebApi.Controllers
                 return NotFound();
             }
 
-            return MappersFactory.RouletteCreatedDTO().Map(roulette);
+            return roulette;
         }
 
         // PUT: api/roulette/1/open
@@ -68,13 +66,20 @@ namespace RouletteWebApi.Controllers
             {
                 return BadRequest("Roulette is currently open");
             }
+            if (roulette.UpdateDate != null)
+            {
+                return BadRequest("This roulette game has already been played. It cannot be opened again.");
+            }
 
             roulette.IsOpen = true;
             roulette.UpdateDate = DateTime.Now;
 
             await repository.Update(roulette); 
 
-            return Ok();
+            return Ok(new Response() { 
+                Code = Enumerators.State.Ok.GetDescription(), 
+                Message = "Roulette was opened" 
+            });
         }
 
         // PUT: api/roulette/1/close
