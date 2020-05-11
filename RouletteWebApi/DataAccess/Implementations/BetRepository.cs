@@ -2,6 +2,7 @@
 using RouletteWebApi.DataAccess;
 using RouletteWebApi.DataAccess.Interfaces;
 using RouletteWebApi.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,7 +11,6 @@ namespace RouletteWebApi.Services.Implementations
 {
     public class BetRepository : IBet
     {
-
         private readonly RouletteContext _context;
 
         public BetRepository(RouletteContext context)
@@ -50,6 +50,7 @@ namespace RouletteWebApi.Services.Implementations
 
         public async Task<Bet> Update(Bet entity)
         {
+            entity.UpdateDate = DateTime.Now;
             _context.Bets.Update(entity);
             await _context.SaveChangesAsync();
 
@@ -58,7 +59,7 @@ namespace RouletteWebApi.Services.Implementations
 
         public async Task<List<Bet>> GetAll()
         {
-            return await _context.Bets.ToListAsync();
+            return await _context.Bets.Include("Player").Include("Roulette").ToListAsync();
         }
 
         public async Task<Bet> GetById(long id)

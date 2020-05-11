@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RouletteWebApi.DataAccess;
+using RouletteWebApi.DataAccess.Interfaces;
 using RouletteWebApi.Models;
-using RouletteWebApi.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,67 +9,67 @@ using System.Threading.Tasks;
 
 namespace RouletteWebApi.Services.Implementations
 {
-    public class RouletteRepository : IRoulette
+    public class PlayerRepository : IPlayer
     {
         private readonly RouletteContext _context;
 
-        public RouletteRepository(RouletteContext context)
+        public PlayerRepository(RouletteContext context)
         {
             _context = context;
         }
 
-        public async Task<Roulette> Add(Roulette entity)
+        public async Task<Player> Add(Player entity)
         {
-            _context.Roulettes.Add(entity);
+            _context.Players.Add(entity);
             await _context.SaveChangesAsync();
 
             return entity;
         }
 
-        public async Task<Roulette> Delete(Roulette entity)
+        public async Task<Player> Delete(Player entity)
         {
-            _context.Roulettes.Remove(entity);
+            _context.Players.Remove(entity);
             await _context.SaveChangesAsync();
 
             return entity;
         }
 
-        public async Task<Roulette> DeleteById(long id)
+        public async Task<Player> DeleteById(long id)
         {
-            Roulette entity = await _context.Roulettes.FindAsync(id);
+            Player entity = await _context.Players.FindAsync(id);
             if (entity == null)
             {
                 return null;
             }
 
-            _context.Roulettes.Remove(entity);
+            _context.Players.Remove(entity);
             await _context.SaveChangesAsync();
 
             return entity;
         }
 
-        public async Task<Roulette> Update(Roulette entity)
+        public async Task<Player> Update(Player entity)
         {
             entity.UpdateDate = DateTime.Now;
-            _context.Roulettes.Update(entity);
+            _context.Players.Update(entity);
             await _context.SaveChangesAsync();
 
             return entity;
         }
 
-        public async Task<List<Roulette>> GetAll()
+        public async Task<List<Player>> GetAll()
         {
-            return await _context.Roulettes.ToListAsync();
+            return await _context.Players.ToListAsync();
         }
 
-        public async Task<Roulette> GetById(long id)
+        public async Task<Player> GetById(long id)
         {
-            return await _context.Roulettes.FindAsync(id);
+            return await _context.Players.FindAsync(id);
         }
 
         public bool Exist(long id)
         {
-            return _context.Roulettes.Any(e => e.Id == id);
+            return _context.Players.Any(e => e.Id == id);
         }
     }
 }
