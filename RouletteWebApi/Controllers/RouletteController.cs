@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RouletteWebApi.DataAccess;
+using RouletteWebApi.DataAccess.Interfaces;
 using RouletteWebApi.DTO;
 using RouletteWebApi.DTO.Mappers;
 using RouletteWebApi.Models;
@@ -17,10 +19,12 @@ namespace RouletteWebApi.Controllers
     public class RouletteController : ControllerBase
     {
         private readonly IRoulette rouletteRepository;
+        private readonly IBet betRepository;
 
         public RouletteController(RouletteContext _context)
         {
             rouletteRepository = new RouletteRepository(_context);
+            betRepository = new BetRepository(_context);
         }
 
         #region API Methods
@@ -35,23 +39,25 @@ namespace RouletteWebApi.Controllers
 
         // GET: api/Roulette
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Roulette>>> GetRoulettes()
+        public async Task<ActionResult<IEnumerable<RouletteDTO>>> GetRoulettes()
         {
-            return await rouletteRepository.GetAll();
+            IEnumerable<Roulette> roulettes = await rouletteRepository.GetAll();
+            return MappersFactory.RouletteDTO().ListMap(roulettes);
         }
 
         // GET: api/Roulette/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Roulette>> GetRoulette(long id)
+        public async Task<ActionResult<RouletteDTO>> GetRoulette(long id)
         {
-            var roulette = await rouletteRepository.GetById(id);
-
-            if (roulette == null)
+            Response response = await ValidateGetRoulette(id);
+            if (response.Code.Equals(Enumerators.State.Error.GetDescription()))
             {
-                return NotFound();
+                return BadRequest(response);
             }
 
-            return roulette;
+            var roulette = await rouletteRepository.GetById(id);
+
+            return MappersFactory.RouletteDTO().Map(roulette);
         }
 
         // PUT: api/roulette/1/open
@@ -77,7 +83,7 @@ namespace RouletteWebApi.Controllers
 
         // PUT: api/roulette/1/close
         [HttpPut("{id:long}/close")]
-        public async Task<ActionResult<Roulette>> PutCloseRoulette(long id)
+        public async Task<ActionResult<IEnumerable<BetDTO>>> PutCloseRoulette(long id)
         {
             Response response = await ValidatePutCloseRoulette(id);
             if (response.Code.Equals(Enumerators.State.Error.GetDescription()))
@@ -87,19 +93,40 @@ namespace RouletteWebApi.Controllers
 
             var roulette = await rouletteRepository.GetById(id);
             roulette.IsOpen = false;
-
             await rouletteRepository.Update(roulette);
 
-            return Ok(new Response()
-            {
-                Code = Enumerators.State.Ok.GetDescription(),
-                Message = "Roulette was closed"
-            });
+            IEnumerable<Bet> bets = await betRepository.GetAll();
+            bets = bets.Where(x => x.Roulette.Id == id).ToList();
+
+            return MappersFactory.BetDTO().ListMap(bets);
         }
 
         #endregion
 
         #region Validations
+
+        public async Task<Response> ValidateGetRoulette(long id) 
+        {
+
+            #region Validate Roulette
+            var roulette = await rouletteRepository.GetById(id);
+            if (roulette == null)
+            {
+                return new Response()
+                {
+                    Code = Enumerators.State.Error.GetDescription(),
+                    Message = "Roulette not found."
+                };
+            }
+            #endregion
+
+            return new Response()
+            {
+                Code = Enumerators.State.Ok.GetDescription(),
+                Message = "Validations passed."
+            };
+
+        }
 
         public async Task<Response> ValidatePutOpenRoulette(long id) 
         {

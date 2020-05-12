@@ -59,7 +59,7 @@ namespace RouletteWebApi.Services.Implementations
 
         public async Task<List<Bet>> GetAll()
         {
-            return await _context.Bets.Include("Player").Include("Roulette").ToListAsync();
+            return await _context.Bets.Include("Player").Include("Roulette").Include("BetType").ToListAsync();
         }
 
         public async Task<Bet> GetById(long id)

@@ -1,6 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace RouletteWebApi.DTO.Mappers
@@ -8,8 +7,7 @@ namespace RouletteWebApi.DTO.Mappers
     public interface IMapper<O,D>
     {
         D Map(O objectToMap);
-
-        IEnumerable<D> Map(IEnumerable<O> objectsToMap);
+        ActionResult<IEnumerable<D>> ListMap(IEnumerable<O> objectsToMap);
 
     }
 }

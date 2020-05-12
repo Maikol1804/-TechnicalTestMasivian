@@ -12,5 +12,26 @@ namespace RouletteWebApi.DTO.Mappers
         {
             return new RouletteCreatedMapper();
         }
+
+        public static IMapper<Player, PlayerDTO> PlayerDTO()
+        {
+            return new PlayerMapper();
+        }
+
+        public static IMapper<Roulette, RouletteDTO> RouletteDTO()
+        {
+            return new RouletteMapper();
+        }
+
+        public static IMapper<BetType, BetTypeDTO> BetTypeDTO()
+        {
+            return new BetTypeMapper();
+        }
+
+        public static IMapper<Bet, BetDTO> BetDTO()
+        {
+            return new BetMapper();
+        }
+
     }
 }

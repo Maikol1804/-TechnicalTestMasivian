@@ -42,36 +42,65 @@ namespace RouletteWebApi.Controllers
             }
 
             Roulette roullete = await rouletteRepository.GetById(bet.Roulette.Id);
-            bet.Roulette = roullete;
+            if (roullete != null) 
+                bet.Roulette = roullete;            
+
+            Player player = await playerRepository.GetById(bet.Player.Id);
+            if (player != null)
+                bet.Player = player;
 
             await betRepository.Add(bet);
-            return CreatedAtAction(nameof(GetBet), new { id = bet.Id }, bet);
+            return CreatedAtAction(nameof(GetBet), new { id = bet.Id }, MappersFactory.BetDTO().Map(bet));
         }
 
         // GET: api/Bet
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Bet>>> GetBets()
+        public async Task<ActionResult<IEnumerable<BetDTO>>> GetBets()
         {
-            return await betRepository.GetAll();
+            IEnumerable<Bet> bets = await betRepository.GetAll();
+            return MappersFactory.BetDTO().ListMap(bets);
         }
 
         // GET: api/Bet/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Bet>> GetBet(long id)
+        public async Task<ActionResult<BetDTO>> GetBet(long id)
         {
-            var bet = await betRepository.GetById(id);
-
-            if (bet == null)
+            Response response = await ValidateGetBet(id);
+            if (response.Code.Equals(Enumerators.State.Error.GetDescription()))
             {
-                return NotFound();
+                return BadRequest(response);
             }
 
-            return bet;
+            Bet bet = await betRepository.GetById(id);
+            return MappersFactory.BetDTO().Map(bet);
         }
 
         #endregion
 
         #region Validations
+
+        public async Task<Response> ValidateGetBet(long id)
+        {
+
+            #region Validate Roulette
+            var bet = await betRepository.GetById(id);
+            if (bet == null)
+            {
+                return new Response()
+                {
+                    Code = Enumerators.State.Error.GetDescription(),
+                    Message = "Bet not found."
+                };
+            }
+            #endregion
+
+            return new Response()
+            {
+                Code = Enumerators.State.Ok.GetDescription(),
+                Message = "Validations passed."
+            };
+
+        }
 
         public async Task<Response> ValidatePostBet(Bet bet) 
         {
