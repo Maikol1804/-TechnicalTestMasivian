@@ -1,0 +1,151 @@
+{
+	"info": {
+		"_postman_id": "130699d3-a838-44b0-8f9a-828c62f1e881",
+		"name": "CollectionRoulette",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "CreateRoulette",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:44350/api/Roulette",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "44350",
+					"path": [
+						"api",
+						"Roulette"
+					]
+				},
+				"description": "Create a roulette into data base"
+			},
+			"response": []
+		},
+		{
+			"name": "OpenRoulette",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:44350/api/roulette/1/open",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "44350",
+					"path": [
+						"api",
+						"roulette",
+						"1",
+						"open"
+					]
+				},
+				"description": "Update IsOpen state of Roullete to true"
+			},
+			"response": []
+		},
+		{
+			"name": "CreateBet",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"player\": {\r\n    \t\"id\": 1\r\n     },\r\n    \"roulette\": {\r\n    \t\"id\": 1\r\n    },\r\n    \"betType\": {\r\n    \t\"code\": \"1\",\r\n    \t\"value\": \"21\" \r\n    },\r\n    \"amount\": 500\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:44350/api/bet",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "44350",
+					"path": [
+						"api",
+						"bet"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CloseRoulette",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:44350/api/roulette/1/close",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "44350",
+					"path": [
+						"api",
+						"roulette",
+						"1",
+						"close"
+					]
+				},
+				"description": "Close roulette with all bets"
+			},
+			"response": []
+		},
+		{
+			"name": "GetRoulettes",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:44350/api/Roulette",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "44350",
+					"path": [
+						"api",
+						"Roulette"
+					]
+				},
+				"description": "Get all roulettes from data base"
+			},
+			"response": []
+		},
+		{
+			"name": "GetBets",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:44350/api/Bet",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "44350",
+					"path": [
+						"api",
+						"Bet"
+					]
+				},
+				"description": "Get all bets into all roulettes"
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

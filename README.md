@@ -184,6 +184,6 @@ For the numerical type only the numbers from `0` to `36` are allowed and for the
 	]
 	```
 
-Additionally [here](RouletteWebApi) you can find a Postman collection to consume the services or watch the swagger when the API runs.
+Additionally [here](CollectionRoulette.postman_collection.json) you can find a Postman collection to consume the services or watch the swagger when the API runs.
 
 That's it :+1:
