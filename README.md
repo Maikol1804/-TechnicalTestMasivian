@@ -30,9 +30,7 @@ For the numerical type only the numbers from `0` to `36` are allowed and for the
 	Response Example:
 	```
 	{
-		{
-			"id": 1
-		}
+		"id": 1
 	}
 	```
 
@@ -43,10 +41,8 @@ For the numerical type only the numbers from `0` to `36` are allowed and for the
 	Response Example:
 	```
 	{
-		{
-			"code": "Ok",
-			"message": "Roulette was opened"
-		}
+		"code": "Ok",
+		"message": "Roulette was opened"
 	}
 	```
 
@@ -57,49 +53,75 @@ For the numerical type only the numbers from `0` to `36` are allowed and for the
 	Body Example 1:
 	```
 	{
-		{
-			"player": {
-				"id": 10	
-			 },
-			"roulette": {
-				"id": 1
-			},
-			"betType": {
-				"code": "1",
-				"value": "21" 
-			},
-			"amount": 1000
-		}
+		"player": {
+			"id": 1	
+		 },
+		"roulette": {
+			"id": 1
+		},
+		"betType": {
+			"code": "1",
+			"value": "21" 
+		},
+		"amount": 1000
 	}
 	```
 	
 	Response Example 1:
 	```
-	{}
+	{
+		"player": {
+			"id": 1
+		},
+		"roulette": {
+			"isOpen": true,
+			"id": 1
+		},
+		"betType": {
+			"code": "1",
+			"value": "21",
+			"id": 1
+		},
+		"amount": 1000,
+		"id": 1
+	}
 	```
 
 	Body Example 2:
 	```
 	{
-		{
-			"player": {
-				"id": 5	
-			 },
-			"roulette": {
-				"id": 1
-			},
-			"betType": {
-				"code": "2",
-				"value": "black" 
-			},
-			"amount": 500
-		}
+		"player": {
+			"id": 5	
+		 },
+		"roulette": {
+			"id": 1
+		},
+		"betType": {
+			"code": "2",
+			"value": "Black" 
+		},
+		"amount": 500
 	}
 	```
 	
 	Response Example 1:
 	```
-	{}
+	{
+		"player": {
+			"id": 5
+		},
+		"roulette": {
+			"isOpen": true,
+			"id": 1
+		},
+		"betType": {
+			"code": "2",
+			"value": "Black",
+			"id": 2
+		},
+		"amount": 500,
+		"id": 2
+	}
 	```
 
 * Close a roulette with your bets:
@@ -108,7 +130,40 @@ For the numerical type only the numbers from `0` to `36` are allowed and for the
 	
 	Response Example:
 	```
-	{}
+	[
+		{
+			"player": {
+				"id": 1
+			},
+			"roulette": {
+				"isOpen": false,
+				"id": 1
+			},
+			"betType": {
+				"code": "1",
+				"value": "21",
+				"id": 1
+			},
+			"amount": 1000,
+			"id": 1
+		},
+		{
+			"player": {
+				"id": 5
+			},
+			"roulette": {
+				"isOpen": false,
+				"id": 1
+			},
+			"betType": {
+				"code": "2",
+				"value": "Black",
+				"id": 2
+			},
+			"amount": 500,
+			"id": 2
+		}
+	]
 	```
 
 * Get all roulettes:
@@ -117,9 +172,18 @@ For the numerical type only the numbers from `0` to `36` are allowed and for the
 	
 	Response Example:
 	```
-	{}
+	[
+		{
+			"isOpen": false,
+			"id": 1
+		},
+		{
+			"isOpen": true,
+			"id": 2
+		}
+	]
 	```
 
-Additionally [here](RouletteWebApi) you can find a Postman collection to consume the services.
+Additionally [here](RouletteWebApi) you can find a Postman collection to consume the services or watch the swagger when the API runs.
 
 That's it :+1:

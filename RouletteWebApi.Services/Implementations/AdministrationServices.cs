@@ -26,6 +26,12 @@ namespace RouletteWebApi.Servicios
             playerRepository = new PlayerRepository(_context);
         }
 
+        #region Services
+
+
+
+        #endregion
+
         #region Validations
 
         #region BetController
