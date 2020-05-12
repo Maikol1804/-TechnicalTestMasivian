@@ -2,7 +2,7 @@
 
 namespace RouletteWebApi.Services.Interfaces
 {
-    interface IRoulette : IRepository <Roulette>
+    public interface IRoulette : IRepository <Roulette>
     {
     }
 }

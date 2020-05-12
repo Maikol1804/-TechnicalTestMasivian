@@ -3,7 +3,7 @@ using RouletteWebApi.Services.Interfaces;
 
 namespace RouletteWebApi.DataAccess.Interfaces
 {
-    interface IPlayer : IRepository<Player>
+    public interface IPlayer : IRepository<Player>
     {
     }
 }

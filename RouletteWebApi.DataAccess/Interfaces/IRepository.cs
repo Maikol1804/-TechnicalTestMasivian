@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace RouletteWebApi.Services.Interfaces
 {
-    interface IRepository<T>
+    public interface IRepository<T>
     {
         Task<T> Add(T entity);
         Task<T> Delete(T entity);
