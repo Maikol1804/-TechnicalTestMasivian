@@ -18,17 +18,11 @@ namespace RouletteWebApi.Controllers
     [ApiController]
     public class BetController : ControllerBase
     {
-        private readonly IBet betRepository;
-        private readonly IRoulette rouletteRepository;
-        private readonly IPlayer playerRepository;
         public AdministrationServices administrationServices;
 
         public BetController(RouletteContext _context)
         {
             administrationServices = new AdministrationServices(_context);
-            betRepository = new BetRepository(_context);
-            rouletteRepository = new RouletteRepository(_context);
-            playerRepository = new PlayerRepository(_context);
         }
 
         #region API Methods
@@ -42,15 +36,20 @@ namespace RouletteWebApi.Controllers
                 return BadRequest(response);
             }
 
-            Roulette roullete = await rouletteRepository.GetById(bet.Roulette.Id);
+            Roulette roullete = await administrationServices.GetRouletteById(bet.Roulette.Id);
             if (roullete != null) 
-                bet.Roulette = roullete;            
+                bet.Roulette = roullete;
 
-            Player player = await playerRepository.GetById(bet.Player.Id);
+            Player player = await administrationServices.GetPlayerById(bet.Player.Id);
             if (player != null)
                 bet.Player = player;
 
-            await betRepository.Add(bet);
+            response = await administrationServices.SaveBet(bet);
+            if (response.Code.Equals(Enumerators.State.Error.GetDescription()))
+            {
+                return BadRequest(response);
+            }
+
             return CreatedAtAction(nameof(GetBet), new { id = bet.Id }, MappersFactory.BetDTO().Map(bet));
         }
 
@@ -58,7 +57,7 @@ namespace RouletteWebApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<BetDTO>>> GetBets()
         {
-            IEnumerable<Bet> bets = await betRepository.GetAll();
+            IEnumerable<Bet> bets = await administrationServices.GetAllBets();
             return MappersFactory.BetDTO().ListMap(bets);
         }
 
@@ -72,7 +71,7 @@ namespace RouletteWebApi.Controllers
                 return BadRequest(response);
             }
 
-            Bet bet = await betRepository.GetById(id);
+            Bet bet = await administrationServices.GetBetById(id);
             return MappersFactory.BetDTO().Map(bet);
         }
 

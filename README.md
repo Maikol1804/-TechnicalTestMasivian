@@ -104,7 +104,7 @@ For the numerical type only the numbers from `0` to `36` are allowed and for the
 	}
 	```
 	
-	Response Example 1:
+	Response Example 2:
 	```
 	{
 		"player": {

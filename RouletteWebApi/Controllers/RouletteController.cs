@@ -18,15 +18,11 @@ namespace RouletteWebApi.Controllers
     [ApiController]
     public class RouletteController : ControllerBase
     {
-        private readonly IRoulette rouletteRepository;
-        private readonly IBet betRepository;
         public AdministrationServices administrationServices;
 
         public RouletteController(RouletteContext _context)
         {
             administrationServices = new AdministrationServices(_context);
-            rouletteRepository = new RouletteRepository(_context);
-            betRepository = new BetRepository(_context);
         }
 
         #region API Methods
@@ -35,7 +31,12 @@ namespace RouletteWebApi.Controllers
         [HttpPost]
         public async Task<ActionResult<Roulette>> PostRoulette([FromForm] Roulette roulette)
         {
-            await rouletteRepository.Add(roulette);
+            Response response = await administrationServices.SaveRoulette(roulette);
+            if (response.Code.Equals(Enumerators.State.Error.GetDescription()))
+            {
+                return BadRequest(response);
+            }
+
             return CreatedAtAction(nameof(GetRoulette), new { id = roulette.Id }, MappersFactory.RouletteCreatedDTO().Map(roulette));
         }
 
@@ -43,7 +44,7 @@ namespace RouletteWebApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<RouletteDTO>>> GetRoulettes()
         {
-            IEnumerable<Roulette> roulettes = await rouletteRepository.GetAll();
+            IEnumerable<Roulette> roulettes = await administrationServices.GetAllRoulettes();
             return MappersFactory.RouletteDTO().ListMap(roulettes);
         }
 
@@ -57,8 +58,7 @@ namespace RouletteWebApi.Controllers
                 return BadRequest(response);
             }
 
-            var roulette = await rouletteRepository.GetById(id);
-
+            Roulette roulette = await administrationServices.GetRouletteById(id);
             return MappersFactory.RouletteDTO().Map(roulette);
         }
 
@@ -72,10 +72,14 @@ namespace RouletteWebApi.Controllers
                 return BadRequest(response);
             }
 
-            var roulette = await rouletteRepository.GetById(id);
+            Roulette roulette = await administrationServices.GetRouletteById(id);
             roulette.IsOpen = true;
 
-            await rouletteRepository.Update(roulette); 
+            response = await administrationServices.UpdateRoulette(roulette);
+            if (response.Code.Equals(Enumerators.State.Error.GetDescription()))
+            {
+                return BadRequest(response);
+            }
 
             return Ok(new Response() { 
                 Code = Enumerators.State.Ok.GetDescription(), 
@@ -93,11 +97,16 @@ namespace RouletteWebApi.Controllers
                 return BadRequest(response);
             }
 
-            var roulette = await rouletteRepository.GetById(id);
+            Roulette roulette = await administrationServices.GetRouletteById(id);
             roulette.IsOpen = false;
-            await rouletteRepository.Update(roulette);
 
-            IEnumerable<Bet> bets = await betRepository.GetAll();
+            response = await administrationServices.UpdateRoulette(roulette);
+            if (response.Code.Equals(Enumerators.State.Error.GetDescription()))
+            {
+                return BadRequest(response);
+            }
+
+            IEnumerable<Bet> bets = await administrationServices.GetAllBets();
             bets = bets.Where(x => x.Roulette.Id == id).ToList();
 
             return MappersFactory.BetDTO().ListMap(bets);

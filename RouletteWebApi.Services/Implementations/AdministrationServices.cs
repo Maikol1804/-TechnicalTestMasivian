@@ -28,7 +28,154 @@ namespace RouletteWebApi.Servicios
 
         #region Services
 
+        #region Roulette
 
+        public async Task<Roulette> GetRouletteById(long id)
+        {
+            try
+            {
+                return await rouletteRepository.GetById(id);
+            }
+            catch (Exception)
+            {
+                //TODO Save in log
+                throw;
+            }
+        }
+
+        public async Task<IEnumerable<Roulette>> GetAllRoulettes() 
+        {
+            try
+            {
+                return await rouletteRepository.GetAll();
+            }
+            catch (Exception)
+            {
+                //TODO Save in log
+                throw;
+            }
+        }
+
+        public async Task<Response> SaveRoulette(Roulette roulette)
+        {
+            Response response = new Response();
+
+            try
+            {
+                await rouletteRepository.Add(roulette);
+                response.Code = Enumerators.State.Ok.GetDescription();
+            }
+            catch (Exception)
+            {
+                //TODO Save in log
+                response.Code = Enumerators.State.Error.GetDescription();
+                response.Message = "Error to save the roullete.";
+            }
+            return response;
+        }
+
+        public async Task<Response> UpdateRoulette(Roulette roulette)
+        {
+            Response response = new Response();
+
+            try
+            {
+                await rouletteRepository.Update(roulette);
+                response.Code = Enumerators.State.Ok.GetDescription();
+            }
+            catch (Exception)
+            {
+                //TODO Save in log
+                response.Code = Enumerators.State.Error.GetDescription();
+                response.Message = "Error to update the roullete.";
+            }
+            return response;
+        }
+
+        #endregion
+
+        #region Bet
+
+        public async Task<Bet> GetBetById(long id)
+        {
+            try
+            {
+                return await betRepository.GetById(id);
+            }
+            catch (Exception)
+            {
+                //TODO Save in log
+                throw;
+            }
+        }
+
+        public async Task<IEnumerable<Bet>> GetAllBets()
+        {
+            try
+            {
+                return await betRepository.GetAll();
+            }
+            catch (Exception)
+            {
+                //TODO Save in log
+                throw;
+            }
+        }
+
+        public async Task<Response> SaveBet(Bet bet)
+        {
+            Response response = new Response();
+
+            try
+            {
+                await betRepository.Add(bet);
+                response.Code = Enumerators.State.Ok.GetDescription();
+            }
+            catch (Exception)
+            {
+                //TODO Save in log
+                response.Code = Enumerators.State.Error.GetDescription();
+                response.Message = "Error to save the bet.";
+            }
+            return response;
+        }
+
+        public async Task<Response> UpdateBet(Bet bet)
+        {
+            Response response = new Response();
+
+            try
+            {
+                await betRepository.Update(bet);
+                response.Code = Enumerators.State.Ok.GetDescription();
+            }
+            catch (Exception)
+            {
+                //TODO Save in log
+                response.Code = Enumerators.State.Error.GetDescription();
+                response.Message = "Error to update the bet.";
+            }
+            return response;
+        }
+
+        #endregion
+
+        #region Player
+
+        public async Task<Player> GetPlayerById(long id)
+        {
+            try
+            {
+                return await playerRepository.GetById(id);
+            }
+            catch (Exception)
+            {
+                //TODO Save in log
+                throw;
+            }
+        }
+
+        #endregion
 
         #endregion
 
