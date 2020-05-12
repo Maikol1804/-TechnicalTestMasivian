@@ -9,6 +9,7 @@ using RouletteWebApi.DTO.Mappers;
 using RouletteWebApi.Models;
 using RouletteWebApi.Services.Implementations;
 using RouletteWebApi.Services.Interfaces;
+using RouletteWebApi.Servicios;
 using RouletteWebApi.Transverse;
 
 namespace RouletteWebApi.Controllers
@@ -19,9 +20,11 @@ namespace RouletteWebApi.Controllers
     {
         private readonly IRoulette rouletteRepository;
         private readonly IBet betRepository;
+        public AdministrationServices administrationServices;
 
         public RouletteController(RouletteContext _context)
         {
+            administrationServices = new AdministrationServices(_context);
             rouletteRepository = new RouletteRepository(_context);
             betRepository = new BetRepository(_context);
         }
@@ -48,7 +51,7 @@ namespace RouletteWebApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<RouletteDTO>> GetRoulette(long id)
         {
-            Response response = await ValidateGetRoulette(id);
+            Response response = await administrationServices.ValidateRoulette(id);
             if (response.Code.Equals(Enumerators.State.Error.GetDescription()))
             {
                 return BadRequest(response);
@@ -63,7 +66,7 @@ namespace RouletteWebApi.Controllers
         [HttpPut("{id:long}/open")]
         public async Task<ActionResult<Roulette>> PutOpenRoulette(long id)
         {
-            Response response = await ValidatePutOpenRoulette(id);
+            Response response = await administrationServices.ValidateOpenRoulette(id);
             if (response.Code.Equals(Enumerators.State.Error.GetDescription()))
             {
                 return BadRequest(response);
@@ -84,7 +87,7 @@ namespace RouletteWebApi.Controllers
         [HttpPut("{id:long}/close")]
         public async Task<ActionResult<IEnumerable<BetDTO>>> PutCloseRoulette(long id)
         {
-            Response response = await ValidatePutCloseRoulette(id);
+            Response response = await administrationServices.ValidateCloseRoulette(id);
             if (response.Code.Equals(Enumerators.State.Error.GetDescription()))
             {
                 return BadRequest(response);
@@ -98,105 +101,6 @@ namespace RouletteWebApi.Controllers
             bets = bets.Where(x => x.Roulette.Id == id).ToList();
 
             return MappersFactory.BetDTO().ListMap(bets);
-        }
-
-        #endregion
-
-        #region Validations
-
-        public async Task<Response> ValidateGetRoulette(long id) 
-        {
-
-            #region Validate Roulette
-            var roulette = await rouletteRepository.GetById(id);
-            if (roulette == null)
-            {
-                return new Response()
-                {
-                    Code = Enumerators.State.Error.GetDescription(),
-                    Message = "Roulette not found."
-                };
-            }
-            #endregion
-
-            return new Response()
-            {
-                Code = Enumerators.State.Ok.GetDescription(),
-                Message = "Validations passed."
-            };
-
-        }
-
-        public async Task<Response> ValidatePutOpenRoulette(long id) 
-        {
-            #region Validate Roulette
-
-            var roulette = await rouletteRepository.GetById(id);
-
-            if (roulette == null)
-            {
-                return new Response()
-                {
-                    Code = Enumerators.State.Error.GetDescription(),
-                    Message = "Roulette not found."
-                };
-            }
-
-            if (roulette.IsOpen)
-            {
-                return new Response()
-                {
-                    Code = Enumerators.State.Error.GetDescription(),
-                    Message = "Roulette is currently open."
-                };
-            }
-
-            if (roulette.UpdateDate != null)
-            {
-                return new Response()
-                {
-                    Code = Enumerators.State.Error.GetDescription(),
-                    Message = "This roulette game has already been played. It cannot be opened again."
-                };
-            }
-
-            #endregion
-
-            return new Response()
-            {
-                Code = Enumerators.State.Ok.GetDescription(),
-                Message = "Validations passed."
-            };
-        }
-
-        public async Task<Response> ValidatePutCloseRoulette(long id) 
-        {
-            var roulette = await rouletteRepository.GetById(id);
-
-            if (roulette == null)
-            {
-                return new Response()
-                {
-                    Code = Enumerators.State.Error.GetDescription(),
-                    Message = "Roulette not found."
-                };
-            }
-
-            if (!roulette.IsOpen)
-            {
-                return new Response()
-                {
-                    Code = Enumerators.State.Error.GetDescription(),
-                    Message = "Roulette is currently closed."
-                };
-            }
-
-            return new Response()
-            {
-                Code = Enumerators.State.Ok.GetDescription(),
-                Message = "Validations passed."
-            };
-
         }
 
         #endregion

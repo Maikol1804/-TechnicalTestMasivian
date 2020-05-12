@@ -17,10 +17,12 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="3.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.9.5" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.0.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.4.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\RouletteWebApi.DataAccess\RouletteWebApi.DataAccess.csproj" />
+    <ProjectReference Include="..\RouletteWebApi.Services\RouletteWebApi.Services.csproj" />
     <ProjectReference Include="..\RouletteWebApi.Transverse\RouletteWebApi.Transverse.csproj" />
   </ItemGroup>
 

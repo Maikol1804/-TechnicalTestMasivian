@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RouletteWebApi.DataAccess\RouletteWebApi.DataAccess.csproj" />
+    <ProjectReference Include="..\RouletteWebApi.Transverse\RouletteWebApi.Transverse.csproj" />
+  </ItemGroup>
+
+</Project>
