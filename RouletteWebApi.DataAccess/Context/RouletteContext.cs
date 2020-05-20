@@ -1,9 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using RouletteWebApi.DataAccess.Context;
 using RouletteWebApi.Models;
+using System.Threading.Tasks;
 
 namespace RouletteWebApi.DataAccess
 {
-    public class RouletteContext : DbContext
+    public class RouletteContext : DbContext, IContext
     {
         public RouletteContext(DbContextOptions<RouletteContext> options) : base(options)
         {
@@ -17,6 +19,11 @@ namespace RouletteWebApi.DataAccess
         public DbSet<Bet> Bets { get; set; }
 
         #endregion
+
+        public Task<int> SaveChangesAsync()
+        {
+            return base.SaveChangesAsync();
+        }
 
     }
 }

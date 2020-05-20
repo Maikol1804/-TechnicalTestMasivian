@@ -5,6 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Autofac" Version="5.2.0" />
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="6.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\RouletteWebApi.DataAccess\RouletteWebApi.DataAccess.csproj" />
     <ProjectReference Include="..\RouletteWebApi.Transverse\RouletteWebApi.Transverse.csproj" />
   </ItemGroup>

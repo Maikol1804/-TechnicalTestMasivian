@@ -1,28 +1,22 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Autofac;
 using Microsoft.AspNetCore.Mvc;
-using RouletteWebApi.DataAccess;
-using RouletteWebApi.DataAccess.Interfaces;
 using RouletteWebApi.DTO;
 using RouletteWebApi.DTO.Mappers;
 using RouletteWebApi.Models;
-using RouletteWebApi.Services.Implementations;
-using RouletteWebApi.Services.Interfaces;
-using RouletteWebApi.Servicios;
 using RouletteWebApi.Transverse;
 
 namespace RouletteWebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class RouletteController : ControllerBase
+    public class RouletteController : BaseController
     {
-        public AdministrationServices administrationServices;
-
-        public RouletteController(RouletteContext _context)
+        
+        public RouletteController(IComponentContext component) : base(component)
         {
-            administrationServices = new AdministrationServices(_context);
         }
 
         #region API Methods

@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using RouletteWebApi.DataAccess;
+using RouletteWebApi.DataAccess.Context;
 using RouletteWebApi.Models;
 using RouletteWebApi.Services.Interfaces;
 using System;
@@ -11,16 +11,18 @@ namespace RouletteWebApi.Services.Implementations
 {
     public class RouletteRepository : IRoulette
     {
-        private readonly RouletteContext _context;
+        protected IContext _context;
+        protected DbSet<Roulette> _dbset;
 
-        public RouletteRepository(RouletteContext context)
+        public RouletteRepository(IContext context)
         {
             _context = context;
+            _dbset = _context.Set<Roulette>();
         }
 
         public async Task<Roulette> Add(Roulette entity)
         {
-            _context.Roulettes.Add(entity);
+            _dbset.Add(entity);
             await _context.SaveChangesAsync();
 
             return entity;
@@ -28,7 +30,7 @@ namespace RouletteWebApi.Services.Implementations
 
         public async Task<Roulette> Delete(Roulette entity)
         {
-            _context.Roulettes.Remove(entity);
+            _dbset.Remove(entity);
             await _context.SaveChangesAsync();
 
             return entity;
@@ -36,13 +38,13 @@ namespace RouletteWebApi.Services.Implementations
 
         public async Task<Roulette> DeleteById(long id)
         {
-            Roulette entity = await _context.Roulettes.FindAsync(id);
+            Roulette entity = await _dbset.FindAsync(id);
             if (entity == null)
             {
                 return null;
             }
 
-            _context.Roulettes.Remove(entity);
+            _dbset.Remove(entity);
             await _context.SaveChangesAsync();
 
             return entity;
@@ -51,7 +53,7 @@ namespace RouletteWebApi.Services.Implementations
         public async Task<Roulette> Update(Roulette entity)
         {
             entity.UpdateDate = DateTime.Now;
-            _context.Roulettes.Update(entity);
+            _dbset.Update(entity);
             await _context.SaveChangesAsync();
 
             return entity;
@@ -59,17 +61,17 @@ namespace RouletteWebApi.Services.Implementations
 
         public async Task<List<Roulette>> GetAll()
         {
-            return await _context.Roulettes.ToListAsync();
+            return await _dbset.ToListAsync();
         }
 
         public async Task<Roulette> GetById(long id)
         {
-            return await _context.Roulettes.FindAsync(id);
+            return await _dbset.FindAsync(id);
         }
 
         public bool Exist(long id)
         {
-            return _context.Roulettes.Any(e => e.Id == id);
+            return _dbset.Any(e => e.Id == id);
         }
     }
 }

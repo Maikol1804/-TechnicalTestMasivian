@@ -7,6 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using RouletteWebApi.DataAccess;
 using Microsoft.OpenApi.Models;
+using Autofac;
+using RouletteWebApi.Services.IoC;
 
 namespace RouletteWebApi
 {
@@ -30,6 +32,11 @@ namespace RouletteWebApi
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Roulette Web Api", Version = "v1" });
             });
 
+        }
+
+        public void ConfigureContainer(ContainerBuilder builder)
+        {
+            builder.RegisterModule(new IoCConfiguration());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

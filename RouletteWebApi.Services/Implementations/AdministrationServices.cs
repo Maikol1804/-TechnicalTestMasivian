@@ -1,4 +1,5 @@
-﻿using RouletteWebApi.DataAccess;
+﻿using Autofac;
+using RouletteWebApi.DataAccess;
 using RouletteWebApi.DataAccess.Interfaces;
 using RouletteWebApi.DTO;
 using RouletteWebApi.Models;
@@ -15,15 +16,17 @@ namespace RouletteWebApi.Servicios
 {
     public class AdministrationServices : IAdministrationServices 
     {
+        private readonly IComponentContext components;
         private readonly IBet betRepository;
         private readonly IRoulette rouletteRepository;
         private readonly IPlayer playerRepository;
 
-        public AdministrationServices(RouletteContext _context)
+        public AdministrationServices(IComponentContext components)
         {
-            betRepository = new BetRepository(_context);
-            rouletteRepository = new RouletteRepository(_context);
-            playerRepository = new PlayerRepository(_context);
+            this.components = components;
+            betRepository = components.Resolve<IBet>();
+            rouletteRepository = components.Resolve<IRoulette>();
+            playerRepository = components.Resolve<IPlayer>();
         }
 
         #region Services
