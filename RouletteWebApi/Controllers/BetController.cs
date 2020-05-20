@@ -23,20 +23,20 @@ namespace RouletteWebApi.Controllers
         [HttpPost]
         public async Task<ActionResult<Bet>> PostBet(Bet bet)
         {
-            Response response = await administrationServices.ValidateBetToSave(bet);
+            Response response = await betServices.ValidateBetToSave(bet);
             if (response.Code.Equals(Enumerators.State.Error.GetDescription())) {
                 return BadRequest(response);
             }
 
-            Roulette roullete = await administrationServices.GetRouletteById(bet.Roulette.Id);
+            Roulette roullete = await rouletteServices.GetRouletteById(bet.Roulette.Id);
             if (roullete != null) 
                 bet.Roulette = roullete;
 
-            Player player = await administrationServices.GetPlayerById(bet.Player.Id);
+            Player player = await playerServices.GetPlayerById(bet.Player.Id);
             if (player != null)
                 bet.Player = player;
 
-            response = await administrationServices.SaveBet(bet);
+            response = await betServices.SaveBet(bet);
             if (response.Code.Equals(Enumerators.State.Error.GetDescription()))
             {
                 return BadRequest(response);
@@ -49,7 +49,7 @@ namespace RouletteWebApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<BetDTO>>> GetBets()
         {
-            IEnumerable<Bet> bets = await administrationServices.GetAllBets();
+            IEnumerable<Bet> bets = await betServices.GetAllBets();
             return MappersFactory.BetDTO().ListMap(bets);
         }
 
@@ -57,13 +57,13 @@ namespace RouletteWebApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<BetDTO>> GetBet(long id)
         {
-            Response response = await administrationServices.ValidateBetToRead(id);
+            Response response = await betServices.ValidateBetToRead(id);
             if (response.Code.Equals(Enumerators.State.Error.GetDescription()))
             {
                 return BadRequest(response);
             }
 
-            Bet bet = await administrationServices.GetBetById(id);
+            Bet bet = await betServices.GetBetById(id);
             return MappersFactory.BetDTO().Map(bet);
         }
 

@@ -5,7 +5,6 @@ using RouletteWebApi.DataAccess.Interfaces;
 using RouletteWebApi.Services.Contracts;
 using RouletteWebApi.Services.Implementations;
 using RouletteWebApi.Services.Interfaces;
-using RouletteWebApi.Servicios;
 
 namespace RouletteWebApi.Services.IoC
 {
@@ -26,13 +25,15 @@ namespace RouletteWebApi.Services.IoC
 
         private static void RegisterServices(ContainerBuilder builder)
         {
-            builder.RegisterType<AdministrationServices>().As<IAdministrationServices>();
+            builder.RegisterType<RouletteServices>().As<IRouletteService>();
+            builder.RegisterType<BetServices>().As<IBetService>();
+            builder.RegisterType<PlayerServices>().As<IPlayerService>();
         }
 
         private static void RegisterRepositories(ContainerBuilder builder)
         {
-            builder.RegisterType<BetRepository>().As<IBet>();
             builder.RegisterType<RouletteRepository>().As<IRoulette>();
+            builder.RegisterType<BetRepository>().As<IBet>();
             builder.RegisterType<PlayerRepository>().As<IPlayer>();
         }
 
