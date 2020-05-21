@@ -6,6 +6,7 @@ using RouletteWebApi.DTO;
 using RouletteWebApi.DTO.Mappers;
 using RouletteWebApi.Models;
 using RouletteWebApi.Transverse;
+using RouletteWebApi.Transverse.Helpers;
 
 namespace RouletteWebApi.Controllers
 {
@@ -28,14 +29,6 @@ namespace RouletteWebApi.Controllers
                 return BadRequest(response);
             }
 
-            Roulette roullete = await rouletteServices.GetRouletteById(bet.Roulette.Id);
-            if (roullete != null) 
-                bet.Roulette = roullete;
-
-            Player player = await playerServices.GetPlayerById(bet.Player.Id);
-            if (player != null)
-                bet.Player = player;
-
             response = await betServices.SaveBet(bet);
             if (response.Code.Equals(Enumerators.State.Error.GetDescription()))
             {
@@ -49,8 +42,12 @@ namespace RouletteWebApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<BetDTO>>> GetBets()
         {
-            IEnumerable<Bet> bets = await betServices.GetAllBets();
-            return MappersFactory.BetDTO().ListMap(bets);
+            ResponseList<Bet> responseBets = await betServices.GetAllBets();
+            if (responseBets.Code.Equals(Enumerators.State.Error.GetDescription()))
+            {
+                return BadRequest(responseBets);
+            }
+            return MappersFactory.BetDTO().ListMap(responseBets.List);
         }
 
         // GET: api/Bet/5
@@ -63,8 +60,13 @@ namespace RouletteWebApi.Controllers
                 return BadRequest(response);
             }
 
-            Bet bet = await betServices.GetBetById(id);
-            return MappersFactory.BetDTO().Map(bet);
+            ResponseEntity<Bet> responseBet = await betServices.GetBetById(id);
+            if (responseBet.Code.Equals(Enumerators.State.Error.GetDescription()))
+            {
+                return BadRequest(responseBet);
+            }
+
+            return MappersFactory.BetDTO().Map(responseBet.Entity);
         }
 
         #endregion

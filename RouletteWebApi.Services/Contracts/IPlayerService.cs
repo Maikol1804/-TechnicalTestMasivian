@@ -1,10 +1,11 @@
 ﻿using RouletteWebApi.Models;
+using RouletteWebApi.Transverse.Helpers;
 using System.Threading.Tasks;
 
 namespace RouletteWebApi.Services.Contracts
 {
     public interface IPlayerService : IService
     {
-        Task<Player> GetPlayerById(long id);
+        Task<ResponseEntity<Player>> GetPlayerById(long id);
     }
 }

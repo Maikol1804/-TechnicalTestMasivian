@@ -4,6 +4,7 @@ using RouletteWebApi.Models;
 using RouletteWebApi.Services.Contracts;
 using RouletteWebApi.Services.Interfaces;
 using RouletteWebApi.Transverse;
+using RouletteWebApi.Transverse.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -21,30 +22,38 @@ namespace RouletteWebApi.Services.Implementations
             rouletteRepository = components.Resolve<IRoulette>();
         }
 
-        public async Task<Roulette> GetRouletteById(long id)
+        public async Task<ResponseEntity<Roulette>> GetRouletteById(long id)
         {
+            ResponseEntity<Roulette> response = new ResponseEntity<Roulette>();
             try
             {
-                return await rouletteRepository.GetById(id);
+                response.Entity = await rouletteRepository.GetById(id);
+                response.Code = Enumerators.State.Ok.GetDescription();
             }
             catch (Exception)
             {
                 //TODO Save in log
-                throw;
+                response.Code = Enumerators.State.Error.GetDescription();
+                response.Message = "Error getting roulette by id.";
             }
+            return response;
         }
 
-        public async Task<IEnumerable<Roulette>> GetAllRoulettes()
+        public async Task<ResponseList<Roulette>> GetAllRoulettes()
         {
+            ResponseList<Roulette> response = new ResponseList<Roulette>();
             try
             {
-                return await rouletteRepository.GetAll();
+                response.List = await rouletteRepository.GetAll();
+                response.Code = Enumerators.State.Ok.GetDescription();
             }
             catch (Exception)
             {
                 //TODO Save in log
-                throw;
+                response.Code = Enumerators.State.Error.GetDescription();
+                response.Message = "Error getting all bets.";
             }
+            return response;
         }
 
         public async Task<Response> SaveRoulette(Roulette roulette)
@@ -79,6 +88,25 @@ namespace RouletteWebApi.Services.Implementations
                 //TODO Save in log
                 response.Code = Enumerators.State.Error.GetDescription();
                 response.Message = "Error to update the roullete.";
+            }
+            return response;
+        }
+
+        public async Task<Response> ChangeRouletteState(long id, bool isOpen)
+        {
+            Response response = new Response();
+            try
+            {
+                Roulette roulette = await rouletteRepository.GetById(id);
+                roulette.IsOpen = isOpen;
+                await rouletteRepository.Update(roulette);
+                response.Code = Enumerators.State.Ok.GetDescription();
+            }
+            catch (Exception)
+            {
+                //TODO Save in log
+                response.Code = Enumerators.State.Error.GetDescription();
+                response.Message = "Error changing the roullete state.";
             }
             return response;
         }

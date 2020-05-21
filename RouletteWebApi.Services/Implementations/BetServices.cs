@@ -5,6 +5,7 @@ using RouletteWebApi.Models;
 using RouletteWebApi.Services.Contracts;
 using RouletteWebApi.Services.Interfaces;
 using RouletteWebApi.Transverse;
+using RouletteWebApi.Transverse.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,30 +28,61 @@ namespace RouletteWebApi.Services.Implementations
             playerRepository = components.Resolve<IPlayer>();
         }
 
-        public async Task<Bet> GetBetById(long id)
+        public async Task<ResponseEntity<Bet>> GetBetById(long id)
         {
+            ResponseEntity<Bet> response = new ResponseEntity<Bet>();
             try
             {
-                return await betRepository.GetById(id);
+                response.Entity = await betRepository.GetById(id);
+                response.Code = Enumerators.State.Ok.GetDescription();
             }
             catch (Exception)
             {
                 //TODO Save in log
-                throw;
+                response.Code = Enumerators.State.Error.GetDescription();
+                response.Message = "Error getting bet by id.";
             }
+            return response;
         }
 
-        public async Task<IEnumerable<Bet>> GetAllBets()
+        public async Task<ResponseList<Bet>> GetAllBets()
         {
+            ResponseList<Bet> response = new ResponseList<Bet>();
             try
             {
-                return await betRepository.GetAll();
+                response.List = await betRepository.GetAll();
+                response.Code = Enumerators.State.Ok.GetDescription();
             }
             catch (Exception)
             {
                 //TODO Save in log
-                throw;
+                response.Code = Enumerators.State.Error.GetDescription();
+                response.Message = "Error getting all bets.";
             }
+            return response;
+        }
+
+        public async Task<ResponseList<Bet>> GetAllBetsByRoulleteId(long id)
+        {
+
+            ResponseList<Bet> response = new ResponseList<Bet>();
+
+            try
+            {
+                IEnumerable<Bet> bets = await betRepository.GetAll();
+                bets = bets.Where(x => x.Roulette.Id == id).ToList();
+
+                response.List = bets;
+                response.Code = Enumerators.State.Ok.GetDescription();
+            }
+            catch (Exception)
+            {
+                //TODO Save in log
+                response.Code = Enumerators.State.Error.GetDescription();
+                response.Message = "Error getting bets by roulette id.";
+            }
+
+            return response;
         }
 
         public async Task<Response> SaveBet(Bet bet)
@@ -59,6 +91,14 @@ namespace RouletteWebApi.Services.Implementations
 
             try
             {
+                Roulette roullete = await rouletteRepository.GetById(bet.Roulette.Id);
+                if (roullete != null)
+                    bet.Roulette = roullete;
+
+                Player player = await playerRepository.GetById(bet.Player.Id);
+                if (player != null)
+                    bet.Player = player;
+
                 await betRepository.Add(bet);
                 response.Code = Enumerators.State.Ok.GetDescription();
             }
@@ -280,7 +320,6 @@ namespace RouletteWebApi.Services.Implementations
                 Code = Enumerators.State.Ok.GetDescription(),
                 Message = "Validations passed."
             };
-
         }
 
         #endregion

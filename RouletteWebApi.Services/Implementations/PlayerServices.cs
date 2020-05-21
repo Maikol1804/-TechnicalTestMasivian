@@ -2,6 +2,8 @@
 using RouletteWebApi.DataAccess.Interfaces;
 using RouletteWebApi.Models;
 using RouletteWebApi.Services.Contracts;
+using RouletteWebApi.Transverse;
+using RouletteWebApi.Transverse.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -20,17 +22,21 @@ namespace RouletteWebApi.Services.Implementations
             playerRepository = components.Resolve<IPlayer>();
         }
 
-        public async Task<Player> GetPlayerById(long id)
+        public async Task<ResponseEntity<Player>> GetPlayerById(long id)
         {
+            ResponseEntity<Player> response = new ResponseEntity<Player>();
             try
             {
-                return await playerRepository.GetById(id);
+                response.Entity = await playerRepository.GetById(id);
+                response.Code = Enumerators.State.Ok.GetDescription();
             }
             catch (Exception)
             {
                 //TODO Save in log
-                throw;
+                response.Code = Enumerators.State.Error.GetDescription();
+                response.Message = "Error getting player by id.";
             }
+            return response;
         }
     }
 }

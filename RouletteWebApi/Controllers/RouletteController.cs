@@ -7,6 +7,7 @@ using RouletteWebApi.DTO;
 using RouletteWebApi.DTO.Mappers;
 using RouletteWebApi.Models;
 using RouletteWebApi.Transverse;
+using RouletteWebApi.Transverse.Helpers;
 
 namespace RouletteWebApi.Controllers
 {
@@ -38,8 +39,12 @@ namespace RouletteWebApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<RouletteDTO>>> GetRoulettes()
         {
-            IEnumerable<Roulette> roulettes = await rouletteServices.GetAllRoulettes();
-            return MappersFactory.RouletteDTO().ListMap(roulettes);
+            ResponseList<Roulette> responseRoulettes = await rouletteServices.GetAllRoulettes();
+            if (responseRoulettes.Code.Equals(Enumerators.State.Error.GetDescription()))
+            {
+                return BadRequest(responseRoulettes);
+            }
+            return MappersFactory.RouletteDTO().ListMap(responseRoulettes.List);
         }
 
         // GET: api/Roulette/5
@@ -52,8 +57,13 @@ namespace RouletteWebApi.Controllers
                 return BadRequest(response);
             }
 
-            Roulette roulette = await rouletteServices.GetRouletteById(id);
-            return MappersFactory.RouletteDTO().Map(roulette);
+            ResponseEntity<Roulette> responseRoulette = await rouletteServices.GetRouletteById(id);
+            if (responseRoulette.Code.Equals(Enumerators.State.Error.GetDescription()))
+            {
+                return BadRequest(responseRoulette);
+            }
+
+            return MappersFactory.RouletteDTO().Map(responseRoulette.Entity);
         }
 
         // PUT: api/roulette/1/open
@@ -66,13 +76,10 @@ namespace RouletteWebApi.Controllers
                 return BadRequest(response);
             }
 
-            Roulette roulette = await rouletteServices.GetRouletteById(id);
-            roulette.IsOpen = true;
-
-            response = await rouletteServices.UpdateRoulette(roulette);
-            if (response.Code.Equals(Enumerators.State.Error.GetDescription()))
+            Response responseChange = await rouletteServices.ChangeRouletteState(id, true);
+            if (responseChange.Code.Equals(Enumerators.State.Error.GetDescription()))
             {
-                return BadRequest(response);
+                return BadRequest(responseChange);
             }
 
             return Ok(new Response() { 
@@ -91,19 +98,19 @@ namespace RouletteWebApi.Controllers
                 return BadRequest(response);
             }
 
-            Roulette roulette = await rouletteServices.GetRouletteById(id);
-            roulette.IsOpen = false;
-
-            response = await rouletteServices.UpdateRoulette(roulette);
-            if (response.Code.Equals(Enumerators.State.Error.GetDescription()))
+            Response responseChange = await rouletteServices.ChangeRouletteState(id, false);
+            if (responseChange.Code.Equals(Enumerators.State.Error.GetDescription()))
             {
-                return BadRequest(response);
+                return BadRequest(responseChange);
             }
 
-            IEnumerable<Bet> bets = await betServices.GetAllBets();
-            bets = bets.Where(x => x.Roulette.Id == id).ToList();
+            var responseBets = await betServices.GetAllBetsByRoulleteId(id);
+            if (responseBets.Code.Equals(Enumerators.State.Error.GetDescription()))
+            {
+                return BadRequest(responseBets);
+            }
 
-            return MappersFactory.BetDTO().ListMap(bets);
+            return MappersFactory.BetDTO().ListMap(responseBets.List);
         }
 
         #endregion
